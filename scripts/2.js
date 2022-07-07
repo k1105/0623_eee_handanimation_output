@@ -1,7 +1,7 @@
 function setup() {
   i = 0;
   step = 0.1;
-  hand = new HandAnimation(data, step);
+  hand = new HandAnimation(data3, step);
   createCanvas(window.innerWidth, window.innerHeight);
   background(0);
   stroke(255);

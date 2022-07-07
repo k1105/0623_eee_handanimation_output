@@ -2,13 +2,47 @@ class HandAnimation {
   constructor(data, step) {
     this.data = data;
     this.step = step;
-    this.length = data.length;
+    this.length = data.length; //input dataのデータ長。外部からは書き換えられない。
+    this.start_at = null;
+    this.end_at = null;
+    this.range = data.length;
+  }
+
+  setRange(start_at, end_at) {
+    if (start_at > end_at) {
+      throw new Error(
+        "invalidValueError: start_at must be smaller than end_at."
+      );
+    }
+
+    if (end_at > this.length) {
+      throw new Error("invalidValueError: end_at exceeds data length.");
+    }
+    if (start_at < end_at && end_at < this.length) {
+      this.start_at = start_at;
+      this.end_at = end_at;
+      this.range = end_at - start_at;
+    } else {
+      throw new Error(
+        "input value has some errors. please fix it and try again."
+      );
+    }
   }
 
   interpolatedPosition(t, arr, base = null) {
-    t = (t + this.length) % this.length;
-    const current = Math.floor(t);
-    const next = (current + 1) % this.length;
+    t = (t + this.range) % this.range;
+
+    let next;
+    let current;
+    if (typeof this.start_at && typeof this.end_at == "number") {
+      current = Math.floor(t) + this.start_at;
+      next = ((Math.floor(t) + 1) % this.range) + this.start_at;
+      t += this.start_at;
+    } else {
+      current = Math.floor(t);
+      next = (current + 1) % this.length;
+    }
+
     const delta = t - current;
 
     if (base) {
@@ -98,5 +132,26 @@ class HandAnimation {
   }
   palm(t) {
     return [this.interpolatedPosition(t, this.data.palmBase[0])];
+  }
+
+  getTime(t) {
+    t = (t + this.range) % this.range;
+
+    let next;
+    let current;
+    if (typeof this.start_at && typeof this.end_at == "number") {
+      current = Math.floor(t) + this.start_at;
+      next = ((Math.floor(t) + 1) % this.range) + this.start_at;
+      t += this.start_at;
+    } else {
+      current = Math.floor(t);
+      next = (current + 1) % this.length;
+    }
+
+    const delta = t - current;
+
+    //console.log(t);
+
+    return t;
   }
 }
